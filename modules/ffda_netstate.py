@@ -17,7 +17,7 @@ gateways, nodes, clients = 0, 0, 0
 def setup(bot):
     global hs
 
-    hs = shelve.open("%sffda-highscore.shelve" % bot.config.core.datadir, writeback=True)
+    hs = shelve.open("ffda-highscore.shelve", writeback=True)
 
     # total highscore
     if 'nodes' not in hs:
