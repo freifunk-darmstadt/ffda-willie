@@ -1,0 +1,14 @@
+*.pyc
+__pycache__/
+
+*.sqlite
+*.db
+*.pid
+*.shelve
+
+logs/
+
+bot.cfg
+
+.idea/
+

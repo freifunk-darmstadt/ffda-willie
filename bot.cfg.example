@@ -1,0 +1,34 @@
+[core]
+nick=bot-nickname
+user=ident
+name=Status-Bot
+
+host=irc.hackint.org
+port=6697
+timeout=120
+
+use_ssl=True
+verify_ssl=False
+
+owner=alice
+admin=bob,mallory
+
+logdir=logs/
+pid_dir=.
+homedir=.
+extra=modules/
+
+channels = #ffxx
+enable = ffda_lib,ffda_netstate
+prefix = .
+
+verbose=warning
+logging_level=ERROR
+
+[db]
+userdb_type=sqlite
+userdb_file=ffda.sqlite
+
+[ffda]
+msg_target=#ffxx
+
