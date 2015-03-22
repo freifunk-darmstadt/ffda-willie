@@ -8,7 +8,7 @@ import time
 import traceback
 from datetime import datetime
 
-from ffda_lib import pretty_date
+from ffda_lib import pretty_date, day_changed
 
 hs = None
 gateways, nodes, clients = 0, 0, 0
@@ -28,8 +28,7 @@ def setup(bot):
         hs['clients_dt'] = time.time()
 
     # end of day highscore, also clean up if we load a daychange from file
-    if 'daily' not in hs or \
-       datetime.fromtimestamp(hs['daily_dt']).strftime('%x') != time.strftime('%x'):
+    if 'daily' not in hs or day_changed(hs['daily_dt']):
         hs['daily_nodes'] = 0
         hs['daily_nodes_dt'] = time.time()
         hs['daily_clients'] = 0
@@ -49,7 +48,7 @@ def shutdown(bot):
 def update(bot):
     global hs, gateways, nodes, clients
 
-    result = requests.get('https://map.darmstadt.freifunk.net/nodes.json')
+    result = requests.get(bot.config.freifunk.ffmap_nodes_json)
     try:
         mapdata = json.loads(result.text)
     except ValueError:
@@ -93,21 +92,19 @@ def update(bot):
         hs['daily_clients_dt'] = time.time()
 
     if new_highscore:
-        message = "Neuer Highscore von {} Nodes ({}) und {} Clients ({}).".format(
+        msg = "Neuer Highscore von {} Nodes ({}) und {} Clients ({}).".format(
                   hs['nodes'], pretty_date(hs['nodes_dt']),
                   hs['clients'], pretty_date(hs['clients_dt']))
-
-        print(message)
-        bot.msg(bot.config.ffda.msg_target, message)
+        print(msg)
+        bot.msg(bot.config.freifunk.announce_target, msg)
 
     # detect daychange
-    if datetime.fromtimestamp(hs['daily_dt']).strftime('%x') != time.strftime('%x'):
-        message = "Der gestrige Highscore liegt bei {} Nodes ({}) und {} Clients ({}).".format(
-            hs['daily_nodes'], pretty_date(hs['daily_nodes_dt']),
-            hs['daily_clients'], pretty_date(hs['daily_clients_dt']))
-
-        print(message)
-        bot.msg(bot.config.ffda.msg_target, message)
+    if day_changed(hs['daily_dt']):
+        tpl = "Der gestrige Highscore liegt bei {} Nodes ({}) und {} Clients ({})."
+        msg = tpl.format(hs['daily_nodes'], pretty_date(hs['daily_nodes_dt']),
+                         hs['daily_clients'], pretty_date(hs['daily_clients_dt']))
+        print(msg)
+        bot.msg(bot.config.freifunk.announce_target, msg)
 
         # reset daily counters
         hs['daily_nodes'] = 0
@@ -121,20 +118,18 @@ def update(bot):
 def status(bot, trigger):
     global nodes, gateways, clients
 
-    message = "Derzeit sind {} Gateways, {} Nodes (^{}) und {} Clients (^{}) online.".format(
-              gateways, nodes, hs['daily_nodes'], clients, hs['daily_clients'])
-
-    print(message)
-    bot.msg(bot.config.ffda.msg_target, message)
+    tpl = "Derzeit sind {} Gateways, {} Nodes (^{}) und {} Clients (^{}) online."
+    msg = tpl.format(gateways, nodes, hs['daily_nodes'], clients, hs['daily_clients'])
+    bot.say(msg)
+    print(msg)
 
 
 @willie.module.commands('highscore')
 def highscore(bot, trigger):
     global hs
 
-    message = "Der Highscore liegt bei {} Nodes ({}) und {} Clients ({}).".format(
-              hs['nodes'], pretty_date(hs['nodes_dt']),
-              hs['clients'], pretty_date(hs['clients_dt']))
-
-    print(message)
-    bot.msg(bot.config.ffda.msg_target, message)
+    tpl = "Der Highscore liegt bei {} Nodes ({}) und {} Clients ({})."
+    msg = tpl.format(hs['nodes'], pretty_date(hs['nodes_dt']),
+                     hs['clients'], pretty_date(hs['clients_dt']))
+    bot.say(msg)
+    print(msg)

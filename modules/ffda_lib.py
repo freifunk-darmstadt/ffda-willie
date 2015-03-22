@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 
 
@@ -44,3 +45,8 @@ def pretty_date(timestamp=False):
         return "vor " + str(day_diff) + " Tagen"
 
     return "am " + compare.strftime('%d.%m.%Y um %H:%M Uhr')
+
+
+def day_changed(since):
+    then = datetime.fromtimestamp(since).strftime('%x')
+    return then != time.strftime('%x')

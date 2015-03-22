@@ -19,7 +19,7 @@ homedir=.
 extra=modules/
 
 channels = #ffxx
-enable = ffda_lib,ffda_netstate
+enable = ffda_lib,ffda_netstate,reload
 prefix = .
 
 verbose=warning
@@ -29,6 +29,6 @@ logging_level=ERROR
 userdb_type=sqlite
 userdb_file=ffda.sqlite
 
-[ffda]
-msg_target=#ffxx
-
+[freifunk]
+announce_target=#ffxx
+ffmap_nodes_uri=https://map.darmstadt.freifunk.net/nodes.json
