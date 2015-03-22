@@ -28,7 +28,7 @@ def setup(bot):
         hs['clients_dt'] = time.time()
 
     # end of day highscore, also clean up if we load a daychange from file
-    if 'daily' not in hs or day_changed(hs['daily_dt']):
+    if 'daily_dt' not in hs or day_changed(hs['daily_dt']):
         hs['daily_nodes'] = 0
         hs['daily_nodes_dt'] = time.time()
         hs['daily_clients'] = 0
