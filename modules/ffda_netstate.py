@@ -48,7 +48,7 @@ def shutdown(bot):
 def update(bot):
     global hs, gateways, nodes, clients
 
-    result = requests.get(bot.config.freifunk.ffmap_nodes_json)
+    result = requests.get(bot.config.freifunk.ffmap_nodes_uri)
     try:
         mapdata = json.loads(result.text)
     except ValueError:
