@@ -102,7 +102,7 @@ def update(bot):
 
     # detect daychange
     if datetime.fromtimestamp(hs['daily_dt']).strftime('%x') != time.strftime('%x'):
-        message = "Der gestrige Highscore liegt bei {} Nodes ({}) und {} ({}) Clients.".format(
+        message = "Der gestrige Highscore liegt bei {} Nodes ({}) und {} Clients ({}).".format(
             hs['daily_nodes'], pretty_date(hs['daily_nodes_dt']),
             hs['daily_clients'], pretty_date(hs['daily_clients_dt']))
 
