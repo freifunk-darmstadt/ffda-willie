@@ -19,8 +19,8 @@ msg = ""
 
 def setup(bot):
     global hs, minimum_aggregation_interval, update_interval
-    minimum_aggregation_interval = request.get(bot.config.core.minimum_aggregation_interval)
-    update_interval = request.get(bot.config.core.update_interval)
+    minimum_aggregation_interval = request.get(bot.config.freifunk.minimum_aggregation_interval)
+    update_interval = request.get(bot.config.freifunk.update_interval)
     hs = shelve.open("ffda-highscore.shelve", writeback=True)
 
     # total highscore
@@ -52,8 +52,8 @@ def shutdown(bot):
 @willie.module.interval(update_interval)
 def update(bot):
     global hs, gateways, nodes, clients, new_highscore, msg, update_interval, minimum_aggregation_interval
-    minimum_aggregation_interval = request.get(bot.config.core.minimum_aggregation_interval)
-    update_interval = request.get(bot.config.core.update_interval)
+    minimum_aggregation_interval = request.get(bot.config.freifunk.minimum_aggregation_interval)
+    update_interval = request.get(bot.config.freifunk.update_interval)
     result = requests.get(bot.config.freifunk.ffmap_nodes_uri)
     try:
         mapdata = json.loads(result.text)
@@ -119,9 +119,9 @@ def update(bot):
         hs['daily_dt'] = time.time()
 
 @willie.module.interval(minimum_aggregation_interval)
-def print(bot):
+def announce(bot):
     global msg, new_highscore, minimum_aggregation_interval
-    minimum_aggregation_interval = requests.get(bot.config.minimum_aggregation_interval)
+    minimum_aggregation_interval = requests.get(bot.freifunk.minimum_aggregation_interval)
     if new_highscore:
         print(msg)
         bot.msg(bot.config.freifunk.announce_target, msg)
