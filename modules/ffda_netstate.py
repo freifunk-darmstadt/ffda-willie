@@ -18,7 +18,7 @@ gateways, nodes, clients = 0, 0, 0
 msg = ""
 
 def setup(bot):
-    global hs, msg_interval, update_interval
+    global hs, minimum_aggregation_interval, update_interval
     minimum_aggregation_interval = request.get(bot.config.core.minimum_aggregation_interval)
     update_interval = request.get(bot.config.core.update_interval)
     hs = shelve.open("ffda-highscore.shelve", writeback=True)
