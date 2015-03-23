@@ -26,6 +26,7 @@ def setup(bot):
     if 'clients' not in hs:
         hs['clients'] = 0
         hs['clients_dt'] = time.time()
+	hs['clients_dc'] = 0
 
     # end of day highscore, also clean up if we load a daychange from file
     if 'daily_dt' not in hs or day_changed(hs['daily_dt']):
@@ -44,7 +45,7 @@ def shutdown(bot):
         hs.close()
 
 
-@willie.module.interval(15)
+@willie.module.interval(300)
 def update(bot):
     global hs, gateways, nodes, clients
 
@@ -84,6 +85,7 @@ def update(bot):
         hs['daily_nodes_dt'] = time.time()
 
     if clients > hs['clients']:
+        hs['clients_dc'] = clients - hs['clients']
         hs['clients'] = clients
         hs['clients_dt'] = time.time()
         new_highscore = True
@@ -92,9 +94,9 @@ def update(bot):
         hs['daily_clients_dt'] = time.time()
 
     if new_highscore:
-        msg = "Neuer Highscore von {} Nodes ({}) und {} Clients ({}).".format(
+        msg = "Neuer Highscore von {} Nodes ({}) und {} (+{}) Clients ({}).".format(
                   hs['nodes'], pretty_date(hs['nodes_dt']),
-                  hs['clients'], pretty_date(hs['clients_dt']))
+                  hs['clients'], hs['clients_dc'], pretty_date(hs['clients_dt']))
         print(msg)
         bot.msg(bot.config.freifunk.announce_target, msg)
 
