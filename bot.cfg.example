@@ -21,6 +21,8 @@ extra=modules/
 channels = #ffxx
 enable = ffda_lib,ffda_netstate,reload
 prefix = .
+minimum_aggregation_interval = 300
+update_interval = 15
 
 verbose=warning
 logging_level=ERROR
