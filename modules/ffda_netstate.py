@@ -10,13 +10,17 @@ from datetime import datetime
 
 from ffda_lib import pretty_date, day_changed
 
+minimum_aggregation_interval = 300
+update_interval = 15
+new_highscore = False
 hs = None
 gateways, nodes, clients = 0, 0, 0
-
+msg = ""
 
 def setup(bot):
-    global hs
-
+    global hs, minimum_aggregation_interval, update_interval
+    minimum_aggregation_interval = request.get(bot.config.freifunk.minimum_aggregation_interval)
+    update_interval = request.get(bot.config.freifunk.update_interval)
     hs = shelve.open("ffda-highscore.shelve", writeback=True)
 
     # total highscore
@@ -26,6 +30,7 @@ def setup(bot):
     if 'clients' not in hs:
         hs['clients'] = 0
         hs['clients_dt'] = time.time()
+        hs['clients_dc'] = 0
 
     # end of day highscore, also clean up if we load a daychange from file
     if 'daily_dt' not in hs or day_changed(hs['daily_dt']):
@@ -44,10 +49,11 @@ def shutdown(bot):
         hs.close()
 
 
-@willie.module.interval(15)
+@willie.module.interval(update_interval)
 def update(bot):
-    global hs, gateways, nodes, clients
-
+    global hs, gateways, nodes, clients, new_highscore, msg, update_interval, minimum_aggregation_interval
+    minimum_aggregation_interval = request.get(bot.config.freifunk.minimum_aggregation_interval)
+    update_interval = request.get(bot.config.freifunk.update_interval)
     result = requests.get(bot.config.freifunk.ffmap_nodes_uri)
     try:
         mapdata = json.loads(result.text)
@@ -84,6 +90,7 @@ def update(bot):
         hs['daily_nodes_dt'] = time.time()
 
     if clients > hs['clients']:
+        hs['clients_dc'] = clients - hs['clients']
         hs['clients'] = clients
         hs['clients_dt'] = time.time()
         new_highscore = True
@@ -92,11 +99,9 @@ def update(bot):
         hs['daily_clients_dt'] = time.time()
 
     if new_highscore:
-        msg = "Neuer Highscore von {} Nodes ({}) und {} Clients ({}).".format(
+        msg = "Neuer Highscore von {} Nodes ({}) und {} (+{}) Clients ({}).".format(
                   hs['nodes'], pretty_date(hs['nodes_dt']),
-                  hs['clients'], pretty_date(hs['clients_dt']))
-        print(msg)
-        bot.msg(bot.config.freifunk.announce_target, msg)
+                  hs['clients'], hs['clients_dc'], pretty_date(hs['clients_dt']))
 
     # detect daychange
     if day_changed(hs['daily_dt']):
@@ -113,6 +118,14 @@ def update(bot):
         hs['daily_clients_dt'] = time.time()
         hs['daily_dt'] = time.time()
 
+@willie.module.interval(minimum_aggregation_interval)
+def announce(bot):
+    global msg, new_highscore, minimum_aggregation_interval
+    minimum_aggregation_interval = requests.get(bot.config.freifunk.minimum_aggregation_interval)
+    if new_highscore:
+        print(msg)
+        bot.msg(bot.config.freifunk.announce_target, msg)
+        new_highscore = False
 
 @willie.module.commands('status')
 def status(bot, trigger):
