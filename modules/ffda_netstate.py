@@ -121,7 +121,7 @@ def update(bot):
 @willie.module.interval(minimum_aggregation_interval)
 def announce(bot):
     global msg, new_highscore, minimum_aggregation_interval
-    minimum_aggregation_interval = requests.get(bot.freifunk.minimum_aggregation_interval)
+    minimum_aggregation_interval = requests.get(bot.config.freifunk.minimum_aggregation_interval)
     if new_highscore:
         print(msg)
         bot.msg(bot.config.freifunk.announce_target, msg)
