@@ -10,7 +10,6 @@ import json
 import shelve
 import time
 import traceback
-from datetime import datetime
 
 from ffda_lib import pretty_date, day_changed
 
