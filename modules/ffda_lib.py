@@ -10,9 +10,9 @@ def pretty_date(timestamp=None):
     """
     now = datetime.now()
     compare = None
-    if type(timestamp) is int:
+    if isinstance(timestamp, int):
         compare = datetime.fromtimestamp(timestamp)
-    elif type(timestamp) is float:
+    elif isinstance(timestamp, float):
         compare = datetime.fromtimestamp(int(timestamp))
     elif isinstance(timestamp, datetime):
         compare = timestamp
