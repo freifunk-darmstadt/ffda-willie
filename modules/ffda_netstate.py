@@ -28,15 +28,19 @@ def setup(bot):
     # end of day highscore, also clean up if we load a daychange from file
     try:
         if day_changed(hs['daily_dt']):
-            hs['daily_nodes'] = 0
-            hs['daily_nodes_dt'] = time.time()
-            hs['daily_clients'] = 0
-            hs['daily_clients_dt'] = time.time()
-            hs['daily_dt'] = time.time()
+            reset_highscore(hs)
     except KeyError:
-        pass
+        reset_highscore(hs)
 
     bot.memory['ffda'] = {'highscore': hs}
+
+
+def reset_highscore(highscore):
+    highscore['daily_nodes'] = 0
+    highscore['daily_nodes_dt'] = time.time()
+    highscore['daily_clients'] = 0
+    highscore['daily_clients_dt'] = time.time()
+    highscore['daily_dt'] = time.time()
 
 
 def shutdown(bot):
@@ -113,12 +117,7 @@ def update_highscore(bot, nodes, gateways, clients):
         print(msg)
         bot.msg(bot.config.freifunk.announce_target, msg)
 
-        # reset daily counters
-        hs['daily_nodes'] = 0
-        hs['daily_nodes_dt'] = time.time()
-        hs['daily_clients'] = 0
-        hs['daily_clients_dt'] = time.time()
-        hs['daily_dt'] = time.time()
+        reset_highscore(hs)
 
     bot.memory['ffda']['highscore'] = hs
 
