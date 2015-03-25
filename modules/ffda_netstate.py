@@ -46,7 +46,6 @@ def reset_highscore(highscore):
 def shutdown(bot):
     try:
         hs = bot.memory['ffda']['highscore']
-        hs.sync()
         hs.close()
     except KeyError:
         pass
