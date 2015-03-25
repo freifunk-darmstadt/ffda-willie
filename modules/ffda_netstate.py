@@ -33,7 +33,7 @@ def setup(bot):
         hs['daily_clients_dt'] = time.time()
         hs['daily_dt'] = time.time()
 
-    bot.memory['ffda']['highscore'] = hs
+    bot.memory['ffda'] = {'highscore': hs}
 
 
 def shutdown(bot):
