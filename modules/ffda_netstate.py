@@ -50,8 +50,6 @@ def shutdown(bot):
 
 @willie.module.interval(15)
 def update(bot):
-    hs = bot.memory['ffda']['highscore']
-
     result = requests.get(bot.config.freifunk.ffmap_nodes_uri)
     try:
         mapdata = json.loads(result.text)
@@ -76,6 +74,11 @@ def update(bot):
         clients += node.get('clientcount', 0)
 
     bot.memory['ffda']['status'] = (nodes, gateways, clients)
+    update_highscore(bot, nodes, gateways, clients)
+
+
+def update_highscore(bot, nodes, gateways, clients):
+    hs = bot.memory['ffda']['highscore']
 
     # total highscore
     new_highscore = False
