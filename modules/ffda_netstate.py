@@ -26,12 +26,15 @@ def setup(bot):
         hs['clients_dt'] = time.time()
 
     # end of day highscore, also clean up if we load a daychange from file
-    if 'daily_dt' not in hs or day_changed(hs['daily_dt']):
-        hs['daily_nodes'] = 0
-        hs['daily_nodes_dt'] = time.time()
-        hs['daily_clients'] = 0
-        hs['daily_clients_dt'] = time.time()
-        hs['daily_dt'] = time.time()
+    try:
+        if day_changed(hs['daily_dt']):
+            hs['daily_nodes'] = 0
+            hs['daily_nodes_dt'] = time.time()
+            hs['daily_clients'] = 0
+            hs['daily_clients_dt'] = time.time()
+            hs['daily_dt'] = time.time()
+    except KeyError:
+        pass
 
     bot.memory['ffda'] = {'highscore': hs}
 
