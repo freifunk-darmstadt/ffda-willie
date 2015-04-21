@@ -38,7 +38,7 @@ def pretty_date(timestamp=None):
         if second_diff < 7200:
             return "vor einer Stunde"
         if second_diff < 86400:
-            return "vor {0} Stunden".format(second_diff / 3600)
+            return "vor {0:.2f} Stunden".format(second_diff / 3600)
     if day_diff == 1:
         return "gestern"
     if day_diff < 7:
