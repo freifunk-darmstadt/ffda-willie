@@ -1,21 +1,25 @@
-#!/bin/sh
+#!/bin/bash
+#VIRTUALENV=/home/jarvis/venv
+if [ ! -z $VIRTUALENV ]; then
+    source $VIRTUALENV/bin/activate
+fi
 
-mydir=$(readlink -f $0)
-mydir=$(dirname "$mydir")
+CWD=$(readlink -f $0)
+CWD=$(dirname "$CWD")
 
-if [ ! -r "${mydir}/bot.cfg" ]; then
+if [ ! -r "${CWD}/bot.cfg" ]; then
 	echo "'bot.cfg' is missing. Have you copied 'bot.cfg.example'?"
 	exit 2
 fi
 
 case $1 in
 	start)
-		[ ! -d "${mydir}/logs" ] && mkdir "${mydir}/logs"
+		[ ! -d "${CWD}/logs" ] && mkdir "${CWD}/logs"
 
-		"${mydir}/willie/willie.py" -c "${mydir}/bot.cfg" --fork
+		python "${CWD}/willie/willie.py" -c "${CWD}/bot.cfg" --fork
 		;;
 	stop)
-		"${mydir}/willie/willie.py" -c "${mydir}/bot.cfg" --quit
+		python "${CWD}/willie/willie.py" -c "${CWD}/bot.cfg" --quit
 		;;
 
 	restart)
