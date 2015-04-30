@@ -61,7 +61,7 @@ def update(bot):
     gateways = 0
     nodes = 0
     clients = 0
-    for node in mapdata['nodes']:
+    for nodeid, node in mapdata['nodes'].items():
         try:
             if not node['flags']['online']:
                 continue
@@ -72,7 +72,10 @@ def update(bot):
             continue
 
         nodes += 1
-        clients += node.get('clientcount', 0)
+        try:
+            clients += node['statistics'].get('clients', 0)
+        except KeyError:
+            pass
 
     bot.memory['ffda']['status'] = (nodes, gateways, clients)
     try:
