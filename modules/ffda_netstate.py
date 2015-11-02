@@ -5,9 +5,10 @@ import json
 import shelve
 import time
 import traceback
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 import requests
+from requests.compat import urljoin
 
 import willie
 
@@ -154,6 +155,23 @@ def highscore(bot, trigger):
                      hs['clients'], pretty_date(hs['clients_dt']))
     bot.say(msg)
     print(msg)
+
+
+@willie.module.commands('agenda')
+def agenda(bot, trigger):
+    # restrict to announce channel
+    if not trigger.args[0] == bot.config.freifunk.announce_target:
+        return
+
+    today = date.today()
+    if today.weekday() == 0:
+        monday = today
+    else:
+        monday = today + timedelta(days=-today.weekday(), weeks=1)
+
+    url = urljoin(bot.config.freifunk.padserver, 'ffda-{y}{m}{d}'.format(y=monday.year, m=monday.month, d=monday.day))
+
+    bot.say(url)
 
 
 def pretty_date(timestamp=None):
