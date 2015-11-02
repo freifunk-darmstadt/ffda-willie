@@ -128,6 +128,10 @@ def update_highscore(bot, nodes, gateways, clients):
 
 @willie.module.commands('status')
 def status(bot, trigger):
+    # restrict to announce channel
+    if not trigger.args[0] == bot.config.freifunk.announce_target:
+        return
+
     hs = bot.memory['ffda']['highscore']
     nodes, gateways, clients = bot.memory['ffda']['status']
 
@@ -139,6 +143,10 @@ def status(bot, trigger):
 
 @willie.module.commands('highscore')
 def highscore(bot, trigger):
+    # restrict to announce channel
+    if not trigger.args[0] == bot.config.freifunk.announce_target:
+        return
+
     hs = bot.memory['ffda']['highscore']
 
     tpl = "Der Highscore liegt bei {} Nodes ({}) und {} Clients ({})."
