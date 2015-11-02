@@ -169,7 +169,8 @@ def agenda(bot, trigger):
     else:
         monday = today + timedelta(days=-today.weekday(), weeks=1)
 
-    url = urljoin(bot.config.freifunk.padserver, 'ffda-{y}{m}{d}'.format(y=monday.year, m=monday.month, d=monday.day))
+    url = urljoin(bot.config.freifunk.padserver, 'ffda-{year}{month}{day}'.format(
+        year=monday.year, month=str(monday.month).zfill(2), day=str(monday.day).zfill(2)))
 
     bot.say(url)
 
