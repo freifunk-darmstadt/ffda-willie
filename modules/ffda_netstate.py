@@ -175,6 +175,23 @@ def agenda(bot, trigger):
     bot.say(url)
 
 
+@willie.module.commands('commands')
+@willie.module.commands('help')
+@willie.module.commands('rtfm')
+@willie.module.commands('man')
+def ffda_help(bot, trigger):
+    # restrict to announce channel
+    if not trigger.args[0] == bot.config.freifunk.announce_target:
+        return
+
+    prefix = bot.config.core.prefix
+    commands = ['agenda', 'highscore', 'status']
+
+    msg = "Befehle: {cmds}".format(cmds=", {prefix}".format(prefix=prefix).join(commands))
+
+    bot.say(msg)
+
+
 def pretty_date(timestamp=None):
     """
     Get a datetime object or a int() Epoch timestamp and return a
