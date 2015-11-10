@@ -220,11 +220,11 @@ def pretty_date(timestamp=None):
         if second_diff < 10:
             return "gerade eben"
         if second_diff < 60:
-            return "vor {0} Sekunden".format(second_diff)
+            return "vor {0:.2f} Sekunden".format(second_diff)
         if second_diff < 120:
             return "vor einer Minute"
         if second_diff < 3600:
-            return "vor {0} Minuten".format(second_diff / 60)
+            return "vor {0:.2f} Minuten".format(second_diff / 60)
         if second_diff < 7200:
             return "vor einer Stunde"
         if second_diff < 86400:
@@ -232,7 +232,7 @@ def pretty_date(timestamp=None):
     if day_diff == 1:
         return "gestern"
     if day_diff < 7:
-        return "vor {0} Tagen".format(day_diff)
+        return "vor {0:.2f} Tagen".format(day_diff)
 
     return "am {0}".format(compare.strftime('%d.%m.%Y um %H:%M Uhr'))
 
