@@ -134,7 +134,13 @@ def status(bot, trigger):
         return
 
     hs = bot.memory['ffda']['highscore']
-    nodes, gateways, clients = bot.memory['ffda']['status']
+    status = bot.memory['ffda'].get('status', None)
+
+    if status is None:
+        bot.say('Noch keine Daten.')
+        return
+
+    nodes, gateways, clients = status 
 
     tpl = "Derzeit sind {} Gateways, {} Nodes (^{}) und {} Clients (^{}) online."
     msg = tpl.format(gateways, nodes, hs['daily_nodes'], clients, hs['daily_clients'])
