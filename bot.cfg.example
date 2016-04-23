@@ -31,5 +31,5 @@ userdb_file=ffda.sqlite
 
 [freifunk]
 announce_target=#ffxx
-ffmap_nodes_uri=https://map.darmstadt.freifunk.net/nodes.json
+ffmap_nodes_uri=https://map.darmstadt.freifunk.net/data/nodes.json
 padserver=https://pads.darmstadt.ccc.de/p/
