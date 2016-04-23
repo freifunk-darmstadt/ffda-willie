@@ -218,7 +218,7 @@ def ffda_set(bot, trigger):
 
     if key.endswith('_dt'):
         try:
-            value = (datetime.strptime(value, dt_format) - datetime.utcfromtimestamp(0)).total_seconds()
+            value = (datetime.strptime(value, dt_format) - datetime.fromtimestamp(0)).total_seconds()
         except ValueError:
             bot.reply("Invalid format, please use {} for _dt's".format(dt_format))
             return
