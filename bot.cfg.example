@@ -11,7 +11,7 @@ use_ssl=True
 verify_ssl=False
 
 owner=alice
-admin=bob,mallory
+admins=bob,mallory
 
 logdir=logs/
 pid_dir=.
