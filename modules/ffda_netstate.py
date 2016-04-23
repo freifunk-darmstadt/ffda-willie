@@ -197,6 +197,43 @@ def ffda_help(bot, trigger):
 
     bot.say(msg)
 
+@willie.module.require_admin
+@willie.module.commands('set')
+def ffda_set(bot, trigger):
+    dt_format = '%Y-%m-%d %H:%M:%S'
+
+
+    args = trigger.args[1].split(' ')[1:]
+    mem = bot.memory['ffda']['highscore']
+
+    key = args[0]
+
+    value = ' '.join(args[1:])
+
+    print(args, value)
+
+    if key not in mem:
+        bot.reply('Nope! valid keys: {}'.format(','.join(mem.keys())))
+        return
+
+    if key.endswith('_dt'):
+        try:
+            value = (datetime.strptime(value, dt_format) + timedelta(0)).total_seconds()
+        except ValueError:
+            bot.reply("Invalid format, please use {} for _dt's".format(dt_format))
+            return
+        else:
+            mem[key] = value
+    else:
+        try:
+            value = int(value)
+        except ValueError:
+            bot.reply('Nope! Please supply int values.')
+            return
+        else:
+            mem[key] = value
+
+    bot.reply('set {} to {}'.format(key, value))
 
 def pretty_date(timestamp=None):
     """
