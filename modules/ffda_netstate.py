@@ -191,9 +191,9 @@ def ffda_help(bot, trigger):
         return
 
     prefix = bot.config.core.prefix
-    commands = ['agenda', 'highscore', 'status']
+    commands = ( '{prefix}{cmd}'.format(prefix=prefix, cmd=cmd) for cmd in ('agenda', 'highscore', 'status'))
 
-    msg = "Befehle: {cmds}".format(cmds=", {prefix}".format(prefix=prefix).join(commands))
+    msg = "Befehle: {cmds}".format(cmds=', '.join(commands))
 
     bot.say(msg)
 
