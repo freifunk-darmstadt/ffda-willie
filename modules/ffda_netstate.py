@@ -62,7 +62,7 @@ def update(bot):
     gateways = 0
     nodes = 0
     clients = 0
-    for nodeid, node in mapdata['nodes'].items():
+    for node in mapdata['nodes']:
         try:
             if not node['flags']['online']:
                 continue
