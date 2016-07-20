@@ -66,7 +66,7 @@ def update(bot):
         try:
             if not node['flags']['online']:
                 continue
-            if node['flags']['gateway']:
+            if node['flags'].get('gateway', False):
                 gateways += 1
                 continue
         except KeyError:
