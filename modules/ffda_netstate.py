@@ -169,11 +169,7 @@ def agenda(bot, trigger):
     if not trigger.args[0] == bot.config.freifunk.announce_target:
         return
 
-    today = date.today()
-    if today.weekday() == 0:
-        monday = today
-    else:
-        monday = today + timedelta(days=-today.weekday(), weeks=1)
+    monday = get_next_plenum()
 
     url = urljoin(bot.config.freifunk.padserver, 'ffda-{year}{month}{day}'.format(
         year=monday.year, month=str(monday.month).zfill(2), day=str(monday.day).zfill(2)))
@@ -283,3 +279,29 @@ def pretty_date(timestamp=None):
 def day_changed(since):
     then = datetime.fromtimestamp(since).strftime('%x')
     return then != time.strftime('%x')
+
+def get_next_plenum(now=datetime.now()):
+    if now.weekday() is not 0:
+        next_monday = now + timedelta(days=7-now.weekday())
+    else:
+        next_monday = now
+
+    next_possible_plenum = next_monday
+
+    while True:
+        first_day_of_month = next_possible_plenum.replace(day=1)
+
+        if first_day_of_month.weekday() is not 0:
+            first_monday_of_month = first_day_of_month + timedelta(days=7-first_day_of_month.weekday())
+        else:
+            first_monday_of_month = first_day_of_month
+
+        week_of_month = int((next_possible_plenum.day - first_monday_of_month.day)/7)
+
+        if week_of_month is 0 or week_of_month is 2:
+            break
+
+        next_possible_plenum = next_possible_plenum + timedelta(7)
+
+    next_plenum = next_possible_plenum.replace(hour=19, minute=30, second=0, microsecond=0)
+    return next_plenum
