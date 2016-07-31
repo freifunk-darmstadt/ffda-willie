@@ -53,6 +53,7 @@ def shutdown(bot):
 @willie.module.interval(15)
 def update(bot):
     result = requests.get(bot.config.freifunk.ffmap_nodes_uri)
+    result.encoding = "UTF-8"
     try:
         mapdata = json.loads(result.text)
     except ValueError:
