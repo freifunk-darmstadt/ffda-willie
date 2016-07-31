@@ -60,16 +60,15 @@ def update(bot):
         print(traceback.format_exc())
         return
 
-    gateways = 0
+    gateway_set = set()
     nodes = 0
     clients = 0
     for node in mapdata['nodes']:
         try:
             if not node['flags']['online']:
                 continue
-            if node['flags'].get('gateway', False):
-                gateways += 1
-                continue
+            if 'gateway' in node['statistics']:
+                gateway_set.add(node['statistics']['gateway'])
         except KeyError:
             continue
 
@@ -79,7 +78,7 @@ def update(bot):
         except KeyError:
             pass
 
-    bot.memory['ffda']['status'] = (nodes, gateways, clients)
+    bot.memory['ffda']['status'] = (nodes, len(gateway_set), clients)
     try:
         update_highscore(bot, nodes, gateways, clients)
     except ValueError:
@@ -141,7 +140,7 @@ def status(bot, trigger):
         bot.say('Noch keine Daten.')
         return
 
-    nodes, gateways, clients = status 
+    nodes, gateways, clients = status
 
     tpl = "Derzeit sind {} Gateways, {} Nodes (^{}) und {} Clients (^{}) online."
     msg = tpl.format(gateways, nodes, hs['daily_nodes'], clients, hs['daily_clients'])
