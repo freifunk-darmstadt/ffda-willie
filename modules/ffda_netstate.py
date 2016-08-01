@@ -80,7 +80,7 @@ def update(bot):
 
     bot.memory['ffda']['status'] = (nodes, len(gateway_set), clients)
     try:
-        update_highscore(bot, nodes, gateways, clients)
+        update_highscore(bot, nodes, len(gateway_set), clients)
     except ValueError:
         print('Warning: Unable to update highscore on closed shelve.')
         print(traceback.format_exc())
