@@ -280,7 +280,10 @@ def day_changed(since):
     then = datetime.fromtimestamp(since).strftime('%x')
     return then != time.strftime('%x')
 
-def get_next_plenum(now=datetime.now()):
+def get_next_plenum(now=None):
+    if now is None:
+        now = datetime.now()
+
     if now.weekday() is not 0:
         next_monday = now + timedelta(days=7-now.weekday())
     else:
