@@ -3,9 +3,8 @@ from __future__ import print_function
 
 import json
 import shelve
-import time
 import traceback
-from datetime import datetime, date, timedelta
+import pendulum
 
 import requests
 from requests.compat import urljoin
@@ -19,10 +18,10 @@ def setup(bot):
     # total highscore
     if 'nodes' not in hs:
         hs['nodes'] = 0
-        hs['nodes_dt'] = time.time()
+        hs['nodes_dt'] = pendulum.now()
     if 'clients' not in hs:
         hs['clients'] = 0
-        hs['clients_dt'] = time.time()
+        hs['clients_dt'] = pendulum.now()
 
     # end of day highscore, also clean up if we load a daychange from file
     try:
@@ -36,10 +35,10 @@ def setup(bot):
 
 def reset_highscore(highscore):
     highscore['daily_nodes'] = 0
-    highscore['daily_nodes_dt'] = time.time()
+    highscore['daily_nodes_dt'] = pendulum.now()
     highscore['daily_clients'] = 0
-    highscore['daily_clients_dt'] = time.time()
-    highscore['daily_dt'] = time.time()
+    highscore['daily_clients_dt'] = pendulum.now()
+    highscore['daily_dt'] = pendulum.now()
 
 
 def shutdown(bot):
@@ -93,19 +92,19 @@ def update_highscore(bot, nodes, gateways, clients):
     new_highscore = False
     if nodes > hs['nodes']:
         hs['nodes'] = nodes
-        hs['nodes_dt'] = time.time()
+        hs['nodes_dt'] = pendulum.now()
         new_highscore = True
     if nodes > hs['daily_nodes']:
         hs['daily_nodes'] = nodes
-        hs['daily_nodes_dt'] = time.time()
+        hs['daily_nodes_dt'] = pendulum.now()
 
     if clients > hs['clients']:
         hs['clients'] = clients
-        hs['clients_dt'] = time.time()
+        hs['clients_dt'] = pendulum.now()
         new_highscore = True
     if clients > hs['daily_clients']:
         hs['daily_clients'] = clients
-        hs['daily_clients_dt'] = time.time()
+        hs['daily_clients_dt'] = pendulum.now()
 
     if new_highscore:
         msg = "Neuer Highscore von {} Nodes ({}) und {} Clients ({}).".format(
@@ -214,9 +213,9 @@ def ffda_set(bot, trigger):
 
     if key.endswith('_dt'):
         try:
-            value = (datetime.strptime(value, dt_format) - datetime.fromtimestamp(0)).total_seconds()
+            value = pendulum.parse(value)
         except ValueError:
-            bot.reply("Invalid format, please use {} for _dt's".format(dt_format))
+            bot.reply("Invalid format, please use a format recognized by dateutil.parser for _dt's")
             return
         else:
             mem[key] = value
@@ -231,80 +230,29 @@ def ffda_set(bot, trigger):
 
     bot.reply('set {} to {}'.format(key, value))
 
-def pretty_date(timestamp=None):
+def pretty_date(dt):
     """
-    Get a datetime object or a int() Epoch timestamp and return a
+    Get a pendulum object and return a
     pretty string like 'an hour ago', 'Yesterday', '3 months ago',
     'just now', etc
     """
-    now = datetime.now()
-    compare = None
-    if isinstance(timestamp, int):
-        compare = datetime.fromtimestamp(timestamp)
-    elif isinstance(timestamp, float):
-        compare = datetime.fromtimestamp(int(timestamp))
-    elif isinstance(timestamp, datetime):
-        compare = timestamp
-    elif not timestamp:
-        compare = now
-
-    diff = now - compare
-    second_diff = diff.seconds
-    day_diff = diff.days
-
-    if day_diff < 0:
-        return ''
-
-    if day_diff == 0:
-        if second_diff < 10:
-            return "gerade eben"
-        if second_diff < 60:
-            return "vor {0} Sekunden".format(second_diff)
-        if second_diff < 120:
-            return "vor einer Minute"
-        if second_diff < 3600:
-            return "vor {0} Minuten".format(second_diff / 60)
-        if second_diff < 7200:
-            return "vor einer Stunde"
-        if second_diff < 86400:
-            return "vor {0:.2f} Stunden".format(second_diff / 3600)
-    if day_diff == 1:
-        return "gestern"
-    if day_diff < 7:
-        return "vor {0} Tagen".format(day_diff)
-
-    return "am {0}".format(compare.strftime('%d.%m.%Y um %H:%M Uhr'))
-
+    if dt.in_days <= 7:
+        return dt.diff_for_humans()
+    else:
+        return dt.in_tz('Europe/Berlin').format('am %d.%m.%Y um %H:%M Uhr')
 
 def day_changed(since):
-    then = datetime.fromtimestamp(since).strftime('%x')
-    return then != time.strftime('%x')
+    return since.day != pendulum.now('Europe/Berlin').day
 
 def get_next_plenum(now=None):
     if now is None:
-        now = datetime.now()
+        now = pendulum.now('Europe/Berlin')
 
-    if now.weekday() is not 0:
-        next_monday = now + timedelta(days=7-now.weekday())
-    else:
-        next_monday = now
-
-    next_possible_plenum = next_monday
+    next_monday = pendulum.replace(hour=19, minute=30, second=0, microsecond=0).next(pendulum.MONDAY)
 
     while True:
-        first_day_of_month = next_possible_plenum.replace(day=1)
-
-        if first_day_of_month.weekday() is not 0:
-            first_monday_of_month = first_day_of_month + timedelta(days=7-first_day_of_month.weekday())
-        else:
-            first_monday_of_month = first_day_of_month
-
-        week_of_month = int((next_possible_plenum.day - first_monday_of_month.day)/7)
-
-        if week_of_month is 0 or week_of_month is 2:
+        if next_monday.week_of_month in [1,3]:
             break
-
-        next_possible_plenum = next_possible_plenum + timedelta(7)
-
-    next_plenum = next_possible_plenum.replace(hour=19, minute=30, second=0, microsecond=0)
-    return next_plenum
+        else:
+            next_monday = pendulum.add(weeks=1)
+    return next_monday
