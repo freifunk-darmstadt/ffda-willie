@@ -169,7 +169,7 @@ def agenda(bot, trigger):
     if not trigger.args[0] == bot.config.freifunk.announce_target:
         return
 
-    monday = get_next_plenum(datetime.now())
+    monday = get_next_plenum()
 
     url = urljoin(bot.config.freifunk.padserver, 'ffda-{year}{month}{day}'.format(
         year=monday.year, month=str(monday.month).zfill(2), day=str(monday.day).zfill(2)))
